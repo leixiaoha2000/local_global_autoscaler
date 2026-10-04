@@ -1,0 +1,122 @@
+name: Call Release Image
+
+env:
+  REGISTRY: docker.io
+  IMAGE_REPO: ${{ secrets.IMAGE_REPO || 'projecthami/hami' }}
+  IMAGE_REPO_HAMICORE: ${{ secrets.IMAGE_REPO || 'projecthami/hamicore' }}
+  IMAGE_ROOT_PATH: docker
+  BUILD_PLATFORM: linux/arm64,linux/amd64
+  REGISTER_USER: ${{ github.actor }}
+  REGISTER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        required: true
+        type: string
+      suffix:
+        required: false
+        type: string
+      tagoverride:
+        required: false
+        type: string
+permissions: write-all
+
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        # https://github.com/actions/virtual-environments/issues/709
+        run: |
+          echo "=========original CI disk space"
+          df -h
+          sudo rm -rf "/usr/local/share/boost"
+          sudo rm -rf "$AGENT_TOOLSDIRECTORY"
+          echo "=========after clean up, the left CI disk space"
+          df -h
+      - name: Getting Image Ref
+        id: ref
+        run: |
+          if ${{ inputs.ref != '' }} ; then
+              echo "call by workflow_call"
+              image_ref=${{ inputs.ref }}
+              image_suffix=${{ inputs.suffix }}
+          elif ${{ github.event_name == 'workflow_dispatch' }} ; then
+              echo "call by workflow_dispatch"
+              image_ref=${{ github.event.inputs.ref }}
+              image_suffix=${{ github.event.inputs.suffix }}
+          else
+              echo "unexpected event: ${{ github.event_name }}"
+              exit 1
+          fi
+          echo "ref=${image_ref}" >> $GITHUB_ENV
+          [ -n "${image_suffix}" ] && echo "suffix=-${image_suffix}" >> $GITHUB_ENV
+          if ${{ inputs.tagoverride != '' }} ; then
+              echo "imagetag=${{ inputs.tagoverride }}" >> $GITHUB_ENV
+          else
+              # it is invalid if the ref is branch name "xx/xx/xx"
+              echo "imagetag=${image_ref##*/}" >> $GITHUB_ENV
+          fi
+          exit 0
+  
+
+      - name: Checkout code
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+          ref: ${{ steps.ref.outputs.ref }}
+      
+      - name: Checkout submodule
+        uses: Mushus/checkout-submodule@v1.0.1
+        with:
+          basePath: # optional, default is .
+          submodulePath: libvgpu 
+
+      - name: Lint Dockerfile
+        run: |
+          make lint_dockerfile
+
+      - name: Docker Login
+        uses: docker/login-action@v3.6.0
+        with:
+            username: ${{ secrets.DOCKERHUB_TOKEN }}
+            password: ${{ secrets.DOCKERHUB_PASSWD }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: image=moby/buildkit:master
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO_HAMICORE }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta1
+        uses: docker/metadata-action@v5
+        with:
+            images: ${{ env.REGISTRY }}/${{ env.IMAGE_REPO }}
+
+      - name: Build & Pushing hami image
+        uses: docker/build-push-action@v6.18.0
+        with:
+            context: .
+            file: ${{ env.IMAGE_ROOT_PATH }}/Dockerfile.hamimaster
+            labels: ${{ steps.meta1.outputs.labels }}
+            platforms: ${{ env.BUILD_PLATFORM }}
+            build-args: |
+              VERSION=${{ env.ref }}
+              GOLANG_IMAGE=golang:1.25.5-bookworm
+              HAMICORE_IMAGE=${{ steps.meta.outputs.tags }}
+              DEST_DIR=/usr/local
+            tags: ${{ steps.meta1.outputs.tags }}
+            push: true
+            github-token: ${{ env.REGISTER_PASSWORD }}
+

@@ -1,0 +1,11 @@
+# Lightweight benchmark/control-plane environment. This is sufficient for
+# TokenScale-adapted and Llumnix-queue when vLLM runs in existing KServe pods.
+aiohttp>=3.9,<4
+redis>=5,<6
+tiktoken>=0.7,<1
+matplotlib>=3.8,<4
+kubernetes>=29,<33
+nvidia-ml-py>=12,<13
+PyYAML>=6,<7
+pytest>=7,<9
+

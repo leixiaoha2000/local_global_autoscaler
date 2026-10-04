@@ -1,0 +1,39 @@
+# Llumnix-native: real running-request/KV-cache migration on the downloaded backend.
+# This config targets this repository's single-model, four-GPU scenario.
+SERVER:
+  HOST: '0.0.0.0'
+  PORT: 1234
+  REQUEST_OUTPUT_QUEUE_TYPE: 'zmq'
+  # Avoid the Redis port used by the historical HPA/Chiron control plane.
+  RAY_CLUSTER_PORT: 6380
+  LAUNCH_RAY_CLUSTER: true
+
+MANAGER:
+  INITIAL_INSTANCES: 4
+  DISPATCH_POLICY: 'load'
+  TOPK_RANDOM_DISPATCH: 1
+  DISPATCH_LOAD_METRIC: 'remaining_steps'
+  ENABLE_ROUTINE_MIGRATION: true
+  ENABLE_PRE_STOP_MIGRATION: true
+  PAIR_MIGRATION_FREQUENCY: 1
+  PAIR_MIGRATION_POLICY: 'defrag'
+  MIGRATE_OUT_THRESHOLD: -3.0
+  # The current llumnix-ray main branch deprecates its proactive autoscaler.
+  # Keep this false and use a fixed four-instance pool for a fair scheduling run.
+  ENABLE_SCALING: false
+  MIN_UNITS: 2
+  MAX_UNITS: 4
+  LOG_INSTANCE_INFO: true
+  LOG_FILENAME: 'results/llumnix-native/server.log'
+
+INSTANCE:
+  INSTANCE_TYPE: 'neutral'
+  MIGRATION_LOAD_METRIC: 'remaining_steps'
+  ENABLE_DEFRAG: true
+  MAX_MIGRATION_CONCURRENCY: 1
+  REQUEST_MIGRATION_POLICY: 'SR'
+  MIGRATION_MAX_STAGES: 3
+  MIGRATION_LAST_STAGE_MAX_BLOCKS: 16
+  # rayrpc avoids the optional pygloo/cupy build and is supported by this checkout.
+  MIGRATION_BACKEND: 'rayrpc'
+  MIGRATION_BUFFER_BLOCKS: 512

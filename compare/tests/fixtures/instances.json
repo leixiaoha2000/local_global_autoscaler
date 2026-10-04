@@ -1,0 +1,6 @@
+[
+  {"name": "mock-01", "url": "http://127.0.0.1:18080/v1/completions"},
+  {"name": "mock-02", "url": "http://127.0.0.1:18080/v1/completions"},
+  {"name": "mock-03", "url": "http://127.0.0.1:18080/v1/completions"},
+  {"name": "mock-04", "url": "http://127.0.0.1:18080/v1/completions"}
+]

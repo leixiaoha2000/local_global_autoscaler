@@ -1,0 +1,15 @@
+bin/
+run_device_plugin.sh
+run_scheduler.sh
+device_plugin.sh
+libvgpu/build
+updateso.sh
+libvgpu.so
+.idea
+.vscode
+vendor
+license
+vgpuvalidator
+_output/
+coverage.out
+.DS_Store

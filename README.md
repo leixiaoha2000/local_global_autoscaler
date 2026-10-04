@@ -30,4 +30,3 @@ GPU 服务实验需要自行准备 Kubernetes / KServe、GPU 环境及所需模�
 
 负载与评测脚本若引用被排除的 prompt 数据，请自行准备相同格式的数据，
 并通过脚本的参数指定路径；轻量格式示例位于 `compare/tests/fixtures/`。
-

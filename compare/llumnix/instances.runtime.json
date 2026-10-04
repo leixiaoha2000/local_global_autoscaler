@@ -1,0 +1,42 @@
+[
+  {
+    "name": "qwen-instance-01",
+    "url": "http://10.244.0.111:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-02",
+    "url": "http://10.244.0.112:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-03",
+    "url": "http://10.244.0.113:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-04",
+    "url": "http://10.244.0.114:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-05",
+    "url": "http://10.244.0.115:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-06",
+    "url": "http://10.244.0.120:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-07",
+    "url": "http://10.244.0.116:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-08",
+    "url": "http://10.244.0.119:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-09",
+    "url": "http://10.244.0.118:8081/v1/completions"
+  },
+  {
+    "name": "qwen-instance-10",
+    "url": "http://10.244.0.117:8081/v1/completions"
+  }
+]

@@ -1,0 +1,49 @@
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: qwen-instance-01
+  namespace: like
+  annotations:
+    serving.kserve.io/enable-prometheus-scraping: "true"
+    serving.kserve.io/enable-metric-aggregation: "true"   # 可选：让 KServe 聚合 queue-proxy + model 的指标
+    prometheus.io/port: "8080"
+    prometheus.io/path: "/metrics"
+    prometheus.io/scrape: "true"
+    serving.kserve.io/autoscalerClass: "external" # 决定了不使用HPA
+spec:
+  predictor:
+    minReplicas: 1  # 设置为您需要的副本数
+    model:
+      modelFormat:
+        name: huggingface
+      storageUri: "pvc://qwen-0dot5b-model-pvc"
+      args:
+        - --model_name=Qwen-0.5B
+        - --model_id=/mnt/models
+        - --max-num-seqs=128
+      env:
+        - name: TRANSFORMERS_OFFLINE
+          value: "1"
+        - name: HF_HUB_OFFLINE
+          value: "1"
+      resources:
+        limits:
+          cpu: "2"
+          memory: "16Gi"
+          nvidia.com/gpu: 1
+          nvidia.com/gpumem: 5000
+        requests:
+          cpu: "1"
+          memory: "10Gi"
+          nvidia.com/gpu: 1
+          nvidia.com/gpumem: 5000
+    tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: "NoSchedule"
+      - key: "node.kubernetes.io/disk-pressure"
+        operator: "Exists"
+        effect: "NoSchedule"

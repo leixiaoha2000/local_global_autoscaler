@@ -1,0 +1,7 @@
+[
+  {"name": "qwen-instance-01", "url": "http://10.0.0.1:8080/v1/completions"},
+  {"name": "qwen-instance-02", "url": "http://10.0.0.2:8080/v1/completions"},
+  {"name": "qwen-instance-03", "url": "http://10.0.0.3:8080/v1/completions"},
+  {"name": "qwen-instance-04", "url": "http://10.0.0.4:8080/v1/completions"}
+]
+

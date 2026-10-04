@@ -1,0 +1,19 @@
+{
+  "profile_source": "estimated from the 2026-09-03 Qwen-0.5B batch run; replace with offline_profiler.py output for final paper results",
+  "prefill_tokens_per_s": 6000.0,
+  "convertible_prefill_tokens_per_s": 1500.0,
+  "decode_tokens_per_s": {
+    "S-S": 3000.0,
+    "S-M": 2100.0,
+    "S-L": 1500.0,
+    "M-S": 2700.0,
+    "M-M": 1800.0,
+    "M-L": 1320.0,
+    "L-S": 2100.0,
+    "L-M": 1560.0,
+    "L-L": 1080.0,
+    "default": 1080.0
+  },
+  "method": "provisional estimate: 6x the example profile while preserving bucket ratios; calibrated so the observed 13k-20k token/s demand uses roughly 5-8 S-S-equivalent instances with safety_factor=1.15",
+  "estimated": true
+}

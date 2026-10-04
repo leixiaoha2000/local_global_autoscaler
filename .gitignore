@@ -1,0 +1,49 @@
+# Python 字节码与缓存（自动再生，无需跟踪）
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# 测试缓存
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 构建产物
+build/
+dist/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# kscc 本地工作区暂存
+.kscc/.cc-writes/
+
+# 模型权重（体积大且可从 HuggingFace 重新下载，不纳入版本控制）
+model/
+
+# 本地编辑器与系统文件
+.idea/
+.vscode/
+.DS_Store
+**/.DS_Store
+.kscc/
+
+# 本地配置与凭据（示例配置可保留）
+.env
+.env.*
+!.env.example
+!.env.sample
+*.pem
+*.key
+
+# 实验输出与批量数据（公开仓库只发布源码和小型示例）
+/logs/
+/results/
+/sharegpt/
+/sharegpt_prompts.json
+/sharegpt_prompts_high_variance.json
+
+# 发布时发现的超过 5 MiB 的文件

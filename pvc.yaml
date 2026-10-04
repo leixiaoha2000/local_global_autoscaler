@@ -1,0 +1,42 @@
+# 定义了一个 PersistentVolume (PV)，将物理服务器 wnds-server 上路径 /home/liujunhao/model/DeepSeek-R1-Distill-Qwen-1.5B 下的模型文件映射到 Kubernetes 集群中
+# 定义了一个 PersistentVolumeClaim (PVC)，名字叫 deepseek-1dot5b-model-pvc。这是集群内部申请使用这段存储空间的凭证
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: deepseek-1dot5b-model-pv
+  labels:
+    type: local-storage
+spec:
+  capacity:
+    storage: 10Gi  # 根据模型实际大小调整
+  accessModes:
+    - ReadWriteOnce  # hostPath通常只支持单节点读写
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /home/liujunhao/model/DeepSeek-R1-Distill-Qwen-1.5B  # 本地模型路径
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - wnds-server  # 模型文件所在的节点名称
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: deepseek-1dot5b-model-pvc
+  namespace: scheduler  # 必须与 InferenceService 同命名空间
+spec:
+  accessModes:
+    - ReadWriteOnce  # 与PV的accessModes匹配
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      type: local-storage  # 匹配PV的标签

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: qwen-0dot5b-model-pv
+  labels:
+    type: local-storage
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-storage
+  local:
+    path: /home/like/work2_final/model/Qwen2.5-0.5B-Instruct
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: kubernetes.io/hostname
+              operator: In
+              values:
+                - wnds-server
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: qwen-0dot5b-model-pvc
+  namespace: like   # 请确认与 InferenceService 的 namespace 一致
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: local-storage
+  selector:
+    matchLabels:
+      type: local-storage
