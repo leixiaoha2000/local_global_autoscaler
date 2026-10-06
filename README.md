@@ -21,12 +21,3 @@
 
 运行前请按实际环境调整模型路径、服务地址、Kubernetes 命名空间和 GPU 资源配置。
 GPU 服务实验需要自行准备 Kubernetes / KServe、GPU 环境及所需模型和数据。
-
-## 未上传的本地文件
-
-为保持仓库精简，公开版本不包含模型权重（`model/`）、批量 ShareGPT 数据（`sharegpt/`、
-`sharegpt_prompts*.json`）、运行日志（`logs/`）、实验输出（`results/`）、编辑器配置及缓存。
-发布快照排除所有超过 5 MiB 的文件，并从新的初始提交开始，避免旧历史携带大文件。
-
-负载与评测脚本若引用被排除的 prompt 数据，请自行准备相同格式的数据，
-并通过脚本的参数指定路径；轻量格式示例位于 `compare/tests/fixtures/`。
